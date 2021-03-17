@@ -88,4 +88,42 @@ setTimeout(function 비동기콜벡(){
     const 보너스칸 = document.querySelector('.보너스');
     공색칠하기(보너스,보너스칸)
 }, 7000) ;
+
 //[과제]발전한 코드. 내가 로또 번호를 찍고 => 로또 1등이 되었는지 확인
+
+const result = document.querySelector('.result');
+const input = document.querySelector('input');
+const button = document.querySelector('.button');
+function myLottoInput(e){
+    e.preventDefault();
+    // Enter키가 눌렸을 때 고려
+    // if(e.key ==='Enter'){
+    // }
+
+    //내가 찍은 번호가 맞는지 비교하기
+    const inputValue = input.value;
+    const 셔플2 = [1,2,3,4,5,6];//mock 데이터
+    const inputArr = inputValue.split(',').map((item) => parseInt(item));//value값 숫자로 변경
+    let length = inputArr.length;
+
+    if(length != 6){
+        alert('숫자 6개를 입력해주세요');
+        input.value = '';
+        return false;
+    }
+
+    //두개의 배열 비교 (https://www.delftstack.com/ko/howto/javascript/compare-two-arrays-javascript/)
+    while(length--){
+        if(inputArr[length] !== 셔플2[length]){
+            result.textContent = '아쉬워요 다음 기회에 또 졸부 될 기회를 드립니다.👏';
+            return false;
+        }
+    }
+
+    result.textContent = '1등 당첨!!!!졸부의 길로✌️';
+    input.value = '';
+    return true;
+}
+
+button.addEventListener('click',myLottoInput);
+// input.addEventListener('keyup',myLottoInput);

@@ -65,29 +65,30 @@ function 공색칠하기(숫자,결과창){
     결과창.appendChild(공);
 }
 
-setTimeout(function 비동기콜벡(){
-    공색칠하기(당첨숫자들[0],결과창)
-}, 1000) ;
-setTimeout(function 비동기콜벡(){
-    공색칠하기(당첨숫자들[1],결과창)
-}, 2000) ;
-setTimeout(function 비동기콜벡(){
-    공색칠하기(당첨숫자들[2],결과창)
-}, 3000) ;
-setTimeout(function 비동기콜벡(){
-    공색칠하기(당첨숫자들[3],결과창)
-}, 4000) ;
-setTimeout(function 비동기콜벡(){
-    공색칠하기(당첨숫자들[4],결과창)
-}, 5000) ;
-setTimeout(function 비동기콜벡(){
-    공색칠하기(당첨숫자들[5],결과창)
-}, 6000) ;
-
-setTimeout(function 비동기콜벡(){
-    const 보너스칸 = document.querySelector('.보너스');
-    공색칠하기(보너스,보너스칸)
-}, 7000) ;
+function 당첨공뽑기(){
+    setTimeout(function 비동기콜벡(){
+        공색칠하기(당첨숫자들[0],결과창)
+    }, 1000) ;
+    setTimeout(function 비동기콜벡(){
+        공색칠하기(당첨숫자들[1],결과창)
+    }, 2000) ;
+    setTimeout(function 비동기콜벡(){
+        공색칠하기(당첨숫자들[2],결과창)
+    }, 3000) ;
+    setTimeout(function 비동기콜벡(){
+        공색칠하기(당첨숫자들[3],결과창)
+    }, 4000) ;
+    setTimeout(function 비동기콜벡(){
+        공색칠하기(당첨숫자들[4],결과창)
+    }, 5000) ;
+    setTimeout(function 비동기콜벡(){
+        공색칠하기(당첨숫자들[5],결과창)
+    }, 6000) ;
+    setTimeout(function 비동기콜벡(){
+        const 보너스칸 = document.querySelector('.보너스');
+        공색칠하기(보너스,보너스칸)
+    }, 7000) ;
+}
 
 //[과제]발전한 코드. 내가 로또 번호를 찍고 => 로또 1등이 되었는지 확인
 
@@ -100,30 +101,42 @@ function myLottoInput(e){
     // if(e.key ==='Enter'){
     // }
 
+
     //내가 찍은 번호가 맞는지 비교하기
     const inputValue = input.value;
-    const 셔플2 = [1,2,3,4,5,6];//mock 데이터
     const inputArr = inputValue.split(',').map((item) => parseInt(item));//value값 숫자로 변경
+    const resultNum = inputValue.split(',').filter((item) => item > 45);
     let length = inputArr.length;
 
     if(length != 6){
         alert('숫자 6개를 입력해주세요');
         input.value = '';
         return false;
+    }else if(resultNum.length != 0){
+        alert('1부터 45까지의 숫자들을 입력하세요.');
+        input.value = '';
+        return false;
     }
+
+    당첨공뽑기();
 
     //두개의 배열 비교 (https://www.delftstack.com/ko/howto/javascript/compare-two-arrays-javascript/)
-    while(length--){
-        if(inputArr[length] !== 셔플2[length]){
-            result.textContent = '아쉬워요 다음 기회에 또 졸부 될 기회를 드립니다.👏';
-            return false;
+    setTimeout(function 비동기콜백(){
+        while(length--){
+            if(inputArr[length] !== 셔플[length]){
+                result.textContent = '아쉬워요 다음 기회에 또 졸부 될 기회를 드립니다.👏';
+                return false;
+            }
         }
-    }
+        result.textContent = '1등 당첨!!!!졸부의 길로✌️';
+        input.value = '';
+    }, 8000)
 
-    result.textContent = '1등 당첨!!!!졸부의 길로✌️';
-    input.value = '';
     return true;
 }
 
 button.addEventListener('click',myLottoInput);
-// input.addEventListener('keyup',myLottoInput);
+//개선
+//- 맞춘 로또 번호만 표시
+//- 양의 정수만 입력 가능하게 변경
+//- 문자가 들어갈 경우 입력할 수 없도록

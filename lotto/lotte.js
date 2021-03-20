@@ -123,7 +123,7 @@ function myLottoInput(e){
     //두개의 배열 비교 (https://www.delftstack.com/ko/howto/javascript/compare-two-arrays-javascript/)
     setTimeout(function 비동기콜백(){
         while(length--){
-            if(inputArr[length] !== 셔플[length]){
+            if(inputArr[length] !== 당첨숫자들[length]){
                 result.textContent = '아쉬워요 다음 기회에 또 졸부 될 기회를 드립니다.👏';
                 return false;
             }

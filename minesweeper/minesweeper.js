@@ -1,3 +1,6 @@
+const tbody = document.querySelector('#table tbody');
+const dataset = [];//지뢰 테이블 만들기
+
 document.querySelector('#exec').addEventListener('click',function(){
     var hor = parseInt(document.querySelector('#hor').value);
     var ver = parseInt(document.querySelector('#ver').value);
@@ -20,10 +23,7 @@ document.querySelector('#exec').addEventListener('click',function(){
 
     console.log(셔플);
 
-    //지뢰 테이블 만들기
-    var dataset = [];
     //세로 10,가로 10 이중 반복문이 될 것이다.
-    var tbody = document.querySelector('#table tbody');
     //세로줄을 먼저 만든다.
     for(let i = 0;i < ver ; i+=1 ){
         var arr = [];
@@ -32,6 +32,23 @@ document.querySelector('#exec').addEventListener('click',function(){
         for(let j = 0; j < hor; j+=1){
             arr.push(1);
             const td = document.createElement('td');
+            //[해결방안]존재하지 않는 태그에 이벤트를 달 수 없습니다.
+            td.addEventListener('contextmenu',function(e){
+                e.preventDefault();
+                const 부모tr = e.currentTarget.parentNode;
+                const 부모tbody = e.currentTarget.parentNode.parentNode;
+                //몇번째줄 몇번째칸 -> 틱택톡에서 수행했다.
+                //indexOf는 배열에서 수행 children은 유사배열이기 때문에 indexOf가 수행되지않는다.
+                // const 칸 = Array.prototype.indexOf.call(부모tr.children,td); //[해결방안]td가 정확한 위치에 찍히지 않는다. -> 클로저 문제/클로저 문제를 회피해서 td대신에 e.currentTarget을 써주자
+                const 칸 = Array.prototype.indexOf.call(부모tr.children,e.currentTarget);
+                const 줄 = Array.prototype.indexOf.call(부모tbody.children,부모tr);
+
+                console.log(칸,줄);
+                e.currentTarget.textContent = '!';
+                dataset[줄][칸] = '!';
+                console.log(dataset);
+                //td가 정확한 위치에 찍히지 않는다. -> 클로저 문제
+            })
             tr.appendChild(td);
             // td.textContent = 1;
         }
@@ -40,14 +57,25 @@ document.querySelector('#exec').addEventListener('click',function(){
 
 
     //지뢰 심기
+    //비동기인 코드는 동기인 코드보다 나중에 실행된다.
     for(let k = 0; k < 셔플.length; k++){ //예 60
         let 세로 = Math.floor(셔플[k] / 10); //예 7번째줄 -> 세로 6번째 줄 (0부터 시작)
         let 가로 = 셔플[k] % 10; //예 0 -> 세로 0번째 줄(0부터 시작), 이 값이 -1이 될 수도 있다. -> 배열의 index가 -1이 나오면 안된다.
         console.log(세로,가로);
         tbody.children[세로].children[가로].textContent = 'X';
         dataset[세로][가로] = 'X';
-        //배열의 index가 -1이 나오면 안돼서 그 부분을 수정중
     }
 
     console.log(dataset);
 });
+
+//우클릭으로 깃발 꼽기
+//존재하지 않는 태그에 이벤트를 달 수 없습니다.
+console.log(tbody.querySelectorAll('td'));//빈배열이다.
+tbody.querySelectorAll('td').forEach(function(td){
+    td.addEventListener('contextmenu',function(){
+        console.log('오른쪽 클릭');
+    })
+});
+
+//[과제]- 첫번째 클릭 때는 절대로 x가 안나와야한다.

@@ -8,7 +8,7 @@ document.querySelector('#exec').addEventListener('click',function(){
     const 후보군 = Array(hor * ver)
     .fill()
     .map(function(요소,인덱스){
-        return 인덱스 + 1;//첫번째 칸이 1부터 시작 할 수 있도록
+        return 인덱스;//첫번째 칸이 1부터 시작 할 수 있도록 -> +1을 지우고 0부터 99가 될 수 있도록 변경
     });
     const 셔플 = [];
     //몇 번 반복해야 할 지 모를 때 or 기준값이 변경 될 때 -> while 사용
@@ -40,9 +40,9 @@ document.querySelector('#exec').addEventListener('click',function(){
 
 
     //지뢰 심기
-    for(let k = 0; k < 셔플.length; k++){ //예 59
-        let 세로 = Math.floor(셔플[k] / 10); //6 -> 세로 5번째 줄 (0부터 시작)
-        let 가로 = 셔플[k] % 10 - 1; //9 -> 세로 8번째 줄(0부터 시작), 이 값이 -1이 될 수도 있다.
+    for(let k = 0; k < 셔플.length; k++){ //예 60
+        let 세로 = Math.floor(셔플[k] / 10); //예 7번째줄 -> 세로 6번째 줄 (0부터 시작)
+        let 가로 = 셔플[k] % 10; //예 0 -> 세로 0번째 줄(0부터 시작), 이 값이 -1이 될 수도 있다. -> 배열의 index가 -1이 나오면 안된다.
         console.log(세로,가로);
         tbody.children[세로].children[가로].textContent = 'X';
         dataset[세로][가로] = 'X';

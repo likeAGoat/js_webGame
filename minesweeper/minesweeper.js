@@ -2,6 +2,7 @@ const tbody = document.querySelector('#table tbody');
 const dataset = [];//지뢰 테이블 만들기
 
 document.querySelector('#exec').addEventListener('click',function(){
+    tbody.innerHTML = '';//내부 초기화
     var hor = parseInt(document.querySelector('#hor').value);
     var ver = parseInt(document.querySelector('#ver').value);
     var mine = parseInt(document.querySelector('#mine').value);
@@ -21,7 +22,7 @@ document.querySelector('#exec').addEventListener('click',function(){
         셔플.push(이동값);
     }
 
-    console.log(셔플);
+    // console.log(셔플);
 
     //세로 10,가로 10 이중 반복문이 될 것이다.
     //세로줄을 먼저 만든다.
@@ -43,12 +44,47 @@ document.querySelector('#exec').addEventListener('click',function(){
                 const 칸 = Array.prototype.indexOf.call(부모tr.children,e.currentTarget);
                 const 줄 = Array.prototype.indexOf.call(부모tbody.children,부모tr);
 
-                console.log(칸,줄);
-                e.currentTarget.textContent = '!';
-                dataset[줄][칸] = '!';
-                console.log(dataset);
+                // console.log(칸,줄);
+                // e.currentTarget.textContent = '!';
+                // dataset[줄][칸] = '!';
+                // console.log(dataset);
                 //td가 정확한 위치에 찍히지 않는다. -> 클로저 문제
+
+                if(e.currentTarget.textContent === '' || e.currentTarget.textContent === 'X'){
+                    e.currentTarget.textContent = '!';
+                }else if(e.currentTarget.textContent === '!'){
+                    e.currentTarget.textContent = '?';
+                }else if(e.currentTarget.textContent === '?'){
+                    console.log(e.currentTarget.textContent);
+                    e.currentTarget.textContent = '';
+                    if(dataset[줄][칸] === 1){
+                        e.currentTarget.textContent = '';
+                    }else if(dataset[줄][칸] === 'X'){
+                        e.currentTarget.textContent = 'X';
+                    }
+                }
             })
+            td.addEventListener('click',function(e){
+                e.preventDefault()
+                //클릭했을 때 주변 지뢰 개수
+                const 부모tr = e.currentTarget.parentNode;
+                const 부모tbody = e.currentTarget.parentNode.parentNode;
+                const 칸 = Array.prototype.indexOf.call(부모tr.children,e.currentTarget);
+                const 줄 = Array.prototype.indexOf.call(부모tbody.children,부모tr);
+
+                if(dataset[줄][칸] === 'X'){
+                    e.currentTarget.textContent = '펑';
+                }else{
+                    const 주변 = [
+                        dataset[줄-1][칸-1],dataset[줄-1][칸],dataset[줄-1][칸+1],
+                        dataset[줄][칸-1],                  ,dataset[줄][칸+1],
+                        dataset[줄+1][칸-1],dataset[줄+1][칸],dataset[줄+1][칸+1]
+                    ];
+                    e.currentTarget.textContent = 주변.filter(function(v){
+                        return v === 'X';
+                    }).length;
+                }
+            });
             tr.appendChild(td);
             // td.textContent = 1;
         }
@@ -66,7 +102,7 @@ document.querySelector('#exec').addEventListener('click',function(){
         dataset[세로][가로] = 'X';
     }
 
-    console.log(dataset);
+    // console.log(dataset);
 });
 
 //우클릭으로 깃발 꼽기
@@ -78,4 +114,4 @@ tbody.querySelectorAll('td').forEach(function(td){
     })
 });
 
-//[과제]- 첫번째 클릭 때는 절대로 x가 안나와야한다.
+//[과제]- 첫번째 클릭 때는 절대로 x가 안나와야한다. (x는 그럼 어디로 가야할까 ?)

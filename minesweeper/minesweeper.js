@@ -75,11 +75,15 @@ document.querySelector('#exec').addEventListener('click',function(){
                 if(dataset[줄][칸] === 'X'){
                     e.currentTarget.textContent = '펑';
                 }else{
-                    const 주변 = [
-                        dataset[줄-1][칸-1],dataset[줄-1][칸],dataset[줄-1][칸+1],
-                        dataset[줄][칸-1],                  ,dataset[줄][칸+1],
-                        dataset[줄+1][칸-1],dataset[줄+1][칸],dataset[줄+1][칸+1]
+                    let 주변 = [
+                        dataset[줄][칸-1],dataset[줄][칸+1],
                     ];
+                    if(dataset[줄-1]){
+                        주변 = 주변.concat([dataset[줄-1][칸-1],dataset[줄-1][칸],dataset[줄-1][칸+1]])
+                    }
+                    if(dataset[줄+1]){
+                        주변 = 주변.concat([dataset[줄+1][칸-1],dataset[줄+1][칸],dataset[줄+1][칸+1]])
+                    }
                     e.currentTarget.textContent = 주변.filter(function(v){
                         return v === 'X';
                     }).length;

@@ -35,14 +35,6 @@ const 당첨숫자들 = 셔플.slice(0,6).sort(function(p,c){return p - c;});//m
 console.log('당첨 숫자들',당첨숫자들,'보너스',보너스 )
 
 const 결과창 = document.querySelector('#결과창');
-// for(var i = 0; i<당첨숫자들.length; i+=1){
-//     //클로저 관련된 문제 (반복문 안에 비동기 사용 시) 문제가 된다.
-//     setTimeout(function 비동기콜벡(){
-//         const 공 = document.createElement('div');
-//         공.textContent = 당첨숫자들[i];
-//         결과창.appendChild(공);
-//     }, 1000) ;
-// }
 
 function 공색칠하기(숫자,결과창){
     const 공 = document.createElement('div');
@@ -65,31 +57,47 @@ function 공색칠하기(숫자,결과창){
     결과창.appendChild(공);
 }
 
+//클로저 적용 전
+// function 당첨공뽑기(){
+//     setTimeout(function 비동기콜벡(){
+//         공색칠하기(당첨숫자들[0],결과창)
+//     }, 1000) ;
+//     setTimeout(function 비동기콜벡(){
+//         공색칠하기(당첨숫자들[1],결과창)
+//     }, 2000) ;
+//     setTimeout(function 비동기콜벡(){
+//         공색칠하기(당첨숫자들[2],결과창)
+//     }, 3000) ;
+//     setTimeout(function 비동기콜벡(){
+//         공색칠하기(당첨숫자들[3],결과창)
+//     }, 4000) ;
+//     setTimeout(function 비동기콜벡(){
+//         공색칠하기(당첨숫자들[4],결과창)
+//     }, 5000) ;
+//     setTimeout(function 비동기콜벡(){
+//         공색칠하기(당첨숫자들[5],결과창)
+//     }, 6000) ;
+//     setTimeout(function 비동기콜벡(){
+//         const 보너스칸 = document.querySelector('.보너스');
+//         공색칠하기(보너스,보너스칸)
+//     }, 7000) ;
+// }
+//클로저 적용 후
 function 당첨공뽑기(){
-    setTimeout(function 비동기콜벡(){
-        공색칠하기(당첨숫자들[0],결과창)
-    }, 1000) ;
-    setTimeout(function 비동기콜벡(){
-        공색칠하기(당첨숫자들[1],결과창)
-    }, 2000) ;
-    setTimeout(function 비동기콜벡(){
-        공색칠하기(당첨숫자들[2],결과창)
-    }, 3000) ;
-    setTimeout(function 비동기콜벡(){
-        공색칠하기(당첨숫자들[3],결과창)
-    }, 4000) ;
-    setTimeout(function 비동기콜벡(){
-        공색칠하기(당첨숫자들[4],결과창)
-    }, 5000) ;
-    setTimeout(function 비동기콜벡(){
-        공색칠하기(당첨숫자들[5],결과창)
-    }, 6000) ;
+    for(var i = 0; i<당첨숫자들.length; i+=1){
+        //클로저 관련된 문제 (반복문 안에 비동기 사용 시) 문제가 된다.
+        (function 클로저(j){
+            setTimeout(function 비동기콜벡(){
+                공색칠하기(당첨숫자들[j],결과창)
+            }, (j+1) * 1000) ;
+        })(i);
+        // 클로저(i); -> 즉시 실행 함수로 변경해서 표현한다.
+    }
     setTimeout(function 비동기콜벡(){
         const 보너스칸 = document.querySelector('.보너스');
         공색칠하기(보너스,보너스칸)
     }, 7000) ;
 }
-
 //[과제]발전한 코드. 내가 로또 번호를 찍고 => 로또 1등이 되었는지 확인
 
 const result = document.querySelector('.result');

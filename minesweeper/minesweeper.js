@@ -118,4 +118,13 @@ tbody.querySelectorAll('td').forEach(function(td){
     })
 });
 
+
+for(var i = 0; i < 100; i++){//var i를 써주면 100이 찍히는데 let i를 써주면 원하는대로 동작함
+    (function 클로저(j){
+        setTimeout(function(){
+            console.log(i); // i는 11번째 i가 된다
+        }, i*1000);
+    })(i)
+}
+
 //[과제]- 첫번째 클릭 때는 절대로 x가 안나와야한다. (x는 그럼 어디로 가야할까 ?)

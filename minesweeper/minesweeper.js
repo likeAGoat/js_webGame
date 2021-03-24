@@ -1,8 +1,9 @@
 const tbody = document.querySelector('#table tbody');
-const dataset = [];//지뢰 테이블 만들기
+let dataset = [];//지뢰 테이블 만들기
 
 document.querySelector('#exec').addEventListener('click',function(){
     tbody.innerHTML = '';//내부 초기화
+    dataset = [];//dataset도 초기화
     var hor = parseInt(document.querySelector('#hor').value);
     var ver = parseInt(document.querySelector('#ver').value);
     var mine = parseInt(document.querySelector('#mine').value);
@@ -18,7 +19,7 @@ document.querySelector('#exec').addEventListener('click',function(){
     //몇 번 반복해야 할 지 모를 때 or 기준값이 변경 될 때 -> while 사용
     while(후보군.length > 80){
         //후보군으로 노출된 앞의 20개를 지뢰로 심는다.!!
-        const 이동값 = 후보군.splice(Math.floor(Math.random() * 후보군.length),1)[0];
+        const 이동값 = 후보군.splice(Math.floor(Math.random() * 후보군.length),1)[0]; 
         셔플.push(이동값);
     }
 
@@ -72,6 +73,8 @@ document.querySelector('#exec').addEventListener('click',function(){
                 const 칸 = Array.prototype.indexOf.call(부모tr.children,e.currentTarget);
                 const 줄 = Array.prototype.indexOf.call(부모tbody.children,부모tr);
 
+                //클릭했을 때 색상변화
+                e.currentTarget.classList.add('opened');
                 if(dataset[줄][칸] === 'X'){
                     e.currentTarget.textContent = '펑';
                 }else{
@@ -79,14 +82,42 @@ document.querySelector('#exec').addEventListener('click',function(){
                         dataset[줄][칸-1],dataset[줄][칸+1],
                     ];
                     if(dataset[줄-1]){
-                        주변 = 주변.concat([dataset[줄-1][칸-1],dataset[줄-1][칸],dataset[줄-1][칸+1]])
+                        주변 = 주변.concat([dataset[줄-1][칸-1],dataset[줄-1][칸],dataset[줄-1][칸+1]]) //새 배열을 만들어서 주변이라는 배열에 넣는다.
                     }
                     if(dataset[줄+1]){
                         주변 = 주변.concat([dataset[줄+1][칸-1],dataset[줄+1][칸],dataset[줄+1][칸+1]])
                     }
-                    e.currentTarget.textContent = 주변.filter(function(v){
+                    let 주변지뢰개수 = 주변.filter(function(v){
                         return v === 'X';
                     }).length;
+                    e.currentTarget.textContent = 주변지뢰개수;
+                    //주변지뢰개수를 찾는 것처럼 주변칸을 배열로 모으는 코드입니다.
+                    if(주변지뢰개수 === 0){
+                        let 주변칸 = [];
+                        if(tbody.children[줄-1]){
+                            주변칸 = 주변칸.concat([
+                                tbody.children[줄-1].children[칸-1],
+                                tbody.children[줄-1].children[칸],
+                                tbody.children[줄-1].children[칸+1],
+                            ]);
+                        }
+                        주변칸 = 주변칸.concat([
+                            tbody.children[줄].children[칸-1],
+                            tbody.children[줄].children[칸+1],
+                        ]);
+                        if(tbody.children[줄+1]){
+                            주변칸 = 주변칸.concat([
+                                tbody.children[줄+1].children[칸-1],
+                                tbody.children[줄+1].children[칸],
+                                tbody.children[줄+1].children[칸+1],
+                            ]);
+                        }
+                        // console.log(주변칸);
+                        //빈 문자열을 제거하는 코드(undefined,null,0,빈문자열 제거) 주변칸.filter(v => !!v)
+                        주변칸.filter(v => !!v).forEach(function(옆칸){
+                            옆칸.click();//클릭한 효과를 낸다.
+                        });
+                    }
                 }
             });
             tr.appendChild(td);
@@ -117,14 +148,5 @@ tbody.querySelectorAll('td').forEach(function(td){
         console.log('오른쪽 클릭');
     })
 });
-
-
-for(var i = 0; i < 100; i++){//var i를 써주면 100이 찍히는데 let i를 써주면 원하는대로 동작함
-    (function 클로저(j){
-        setTimeout(function(){
-            console.log(i); // i는 11번째 i가 된다
-        }, i*1000);
-    })(i)
-}
 
 //[과제]- 첫번째 클릭 때는 절대로 x가 안나와야한다. (x는 그럼 어디로 가야할까 ?)

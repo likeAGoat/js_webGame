@@ -32,7 +32,7 @@ document.querySelector('#exec').addEventListener('click',function(){
         dataset.push(arr);
         const tr = document.createElement('tr');
         for(let j = 0; j < hor; j+=1){
-            arr.push(1);
+            arr.push(0);
             const td = document.createElement('td');
             //[해결방안]존재하지 않는 태그에 이벤트를 달 수 없습니다.
             td.addEventListener('contextmenu',function(e){
@@ -72,12 +72,12 @@ document.querySelector('#exec').addEventListener('click',function(){
                 const 부모tbody = e.currentTarget.parentNode.parentNode;
                 const 칸 = Array.prototype.indexOf.call(부모tr.children,e.currentTarget);
                 const 줄 = Array.prototype.indexOf.call(부모tbody.children,부모tr);
-
                 //클릭했을 때 색상변화
                 e.currentTarget.classList.add('opened');
-                if(dataset[줄][칸] === 'X'){
+                
+                if(dataset[줄][칸] === 'X'){// 지뢰 클릭
                     e.currentTarget.textContent = '펑';
-                }else{
+                }else{// 지뢰가 아닌 경우 주변 지뢰 개수
                     let 주변 = [
                         dataset[줄][칸-1],dataset[줄][칸+1],
                     ];
@@ -93,6 +93,7 @@ document.querySelector('#exec').addEventListener('click',function(){
                     e.currentTarget.textContent = 주변지뢰개수;
                     //주변지뢰개수를 찾는 것처럼 주변칸을 배열로 모으는 코드입니다.
                     if(주변지뢰개수 === 0){
+                        console.log('주변을 엽니다');
                         let 주변칸 = [];
                         if(tbody.children[줄-1]){
                             주변칸 = 주변칸.concat([
@@ -112,10 +113,16 @@ document.querySelector('#exec').addEventListener('click',function(){
                                 tbody.children[줄+1].children[칸+1],
                             ]);
                         }
-                        // console.log(주변칸);
+                        dataset[줄][칸] = 1;//열었을 때 데이터를 1로 변경
                         //빈 문자열을 제거하는 코드(undefined,null,0,빈문자열 제거) 주변칸.filter(v => !!v)
                         주변칸.filter(v => !!v).forEach(function(옆칸){
-                            옆칸.click();//클릭한 효과를 낸다.
+                            const 부모tr = 옆칸.parentNode;
+                            const 부모tbody = 옆칸.parentNode.parentNode;
+                            const 옆칸칸 = Array.prototype.indexOf.call(부모tr.children,옆칸);
+                            const 옆칸줄 = Array.prototype.indexOf.call(부모tbody.children,부모tr);
+                            if(dataset[옆칸줄][옆칸칸] !==1){
+                                옆칸.click();//클릭한 효과를 낸다. -> 클릭이벤트를 찾아감 (일종의 재귀 비슷한 꼴이 된다.)
+                            }
                         });
                     }
                 }

@@ -1,9 +1,12 @@
 const tbody = document.querySelector('#table tbody');
 let dataset = [];//지뢰 테이블 만들기
+let 중단플래그 = false;
+let 열은칸 = 0;
 
 document.querySelector('#exec').addEventListener('click',function(){
     tbody.innerHTML = '';//내부 초기화
     dataset = [];//dataset도 초기화
+    열은칸 = 0;
     var hor = parseInt(document.querySelector('#hor').value);
     var ver = parseInt(document.querySelector('#ver').value);
     var mine = parseInt(document.querySelector('#mine').value);
@@ -19,11 +22,9 @@ document.querySelector('#exec').addEventListener('click',function(){
     //몇 번 반복해야 할 지 모를 때 or 기준값이 변경 될 때 -> while 사용
     while(후보군.length > 80){
         //후보군으로 노출된 앞의 20개를 지뢰로 심는다.!!
-        const 이동값 = 후보군.splice(Math.floor(Math.random() * 후보군.length),1)[0]; 
+        const 이동값 = 후보군.splice(Math.floor(Math.random() * 후보군.length),1)[0];
         셔플.push(이동값);
     }
-
-    // console.log(셔플);
 
     //세로 10,가로 10 이중 반복문이 될 것이다.
     //세로줄을 먼저 만든다.
@@ -37,6 +38,9 @@ document.querySelector('#exec').addEventListener('click',function(){
             //[해결방안]존재하지 않는 태그에 이벤트를 달 수 없습니다.
             td.addEventListener('contextmenu',function(e){
                 e.preventDefault();
+                if( 중단플래그 ){
+                    return;//return으로 함수의 실행을 중간에 끊을 수 있다.
+                }
                 const 부모tr = e.currentTarget.parentNode;
                 const 부모tbody = e.currentTarget.parentNode.parentNode;
                 //몇번째줄 몇번째칸 -> 틱택톡에서 수행했다.
@@ -49,7 +53,7 @@ document.querySelector('#exec').addEventListener('click',function(){
                 // e.currentTarget.textContent = '!';
                 // dataset[줄][칸] = '!';
                 // console.log(dataset);
-                //td가 정확한 위치에 찍히지 않는다. -> 클로저 문제
+                // td가 정확한 위치에 찍히지 않는다. -> 클로저 문제
 
                 if(e.currentTarget.textContent === '' || e.currentTarget.textContent === 'X'){
                     e.currentTarget.textContent = '!';
@@ -66,7 +70,9 @@ document.querySelector('#exec').addEventListener('click',function(){
                 }
             })
             td.addEventListener('click',function(e){
-                e.preventDefault()
+                if( 중단플래그 ){
+                    return;//return으로 함수의 실행을 중간에 끊을 수 있다.
+                }
                 //클릭했을 때 주변 지뢰 개수
                 const 부모tr = e.currentTarget.parentNode;
                 const 부모tbody = e.currentTarget.parentNode.parentNode;
@@ -74,9 +80,11 @@ document.querySelector('#exec').addEventListener('click',function(){
                 const 줄 = Array.prototype.indexOf.call(부모tbody.children,부모tr);
                 //클릭했을 때 색상변화
                 e.currentTarget.classList.add('opened');
-                
+                열은칸 += 1;
                 if(dataset[줄][칸] === 'X'){// 지뢰 클릭
                     e.currentTarget.textContent = '펑';
+                    document.querySelector('#result').textContent = '실패ㅠㅠ';
+                    중단플래그 = true;
                 }else{// 지뢰가 아닌 경우 주변 지뢰 개수
                     let 주변 = [
                         dataset[줄][칸-1],dataset[줄][칸+1],
@@ -90,7 +98,8 @@ document.querySelector('#exec').addEventListener('click',function(){
                     let 주변지뢰개수 = 주변.filter(function(v){
                         return v === 'X';
                     }).length;
-                    e.currentTarget.textContent = 주변지뢰개수;
+                    // 거짓인 값 : false,'',0,null,undefined,NaN
+                    e.currentTarget.textContent = 주변지뢰개수 || '';
                     //주변지뢰개수를 찾는 것처럼 주변칸을 배열로 모으는 코드입니다.
                     if(주변지뢰개수 === 0){
                         console.log('주변을 엽니다');
@@ -126,13 +135,17 @@ document.querySelector('#exec').addEventListener('click',function(){
                         });
                     }
                 }
+                console.log(열은칸, hor * ver - mine)
+                if(열은칸 === hor * ver - mine){
+                    중단플래그 = true;
+                    document.querySelector('#result').textContent = '승리 ^^';
+                }
             });
             tr.appendChild(td);
             // td.textContent = 1;
         }
         tbody.appendChild(tr);
     }
-
 
     //지뢰 심기
     //비동기인 코드는 동기인 코드보다 나중에 실행된다.
@@ -143,8 +156,6 @@ document.querySelector('#exec').addEventListener('click',function(){
         tbody.children[세로].children[가로].textContent = 'X';
         dataset[세로][가로] = 'X';
     }
-
-    // console.log(dataset);
 });
 
 //우클릭으로 깃발 꼽기

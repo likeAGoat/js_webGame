@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        #screen{
+            width: 300px;
+            height: 200px;
+        }
+        .waiting{
+            background-color: aqua;
+        }
+        .ready{
+            background-color: palevioletred;
+        }
+        .now{
+            background-color: chartreuse;
+        }
+    </style>
+</head>
+<body>
+    <!-- 화면이 빨간색 -> 랜덤한 시간이 흐른 후 초록색 -> 파란색화면 -->
+    <div id="screen" class="waiting">
+         클릭해서 시작하세요.
+    </div>
+    <script src="./reaction.js"></script>
+</body>
+</html>

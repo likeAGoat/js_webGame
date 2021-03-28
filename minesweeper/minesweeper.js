@@ -2,6 +2,16 @@ const tbody = document.querySelector('#table tbody');
 let dataset = [];//지뢰 테이블 만들기
 let 중단플래그 = false;
 let 열은칸 = 0;
+//딕셔너리를 만들자
+let 코드표 = {
+    연칸: -1,
+    물음표: -2,
+    깃발: -3,
+    깃발지뢰: -4,
+    물음표지뢰: -5,
+    지뢰: 1,
+    보통칸: 0,
+}
 
 document.querySelector('#exec').addEventListener('click',function(){
     tbody.innerHTML = '';//내부 초기화
@@ -33,7 +43,7 @@ document.querySelector('#exec').addEventListener('click',function(){
         dataset.push(arr);
         const tr = document.createElement('tr');
         for(let j = 0; j < hor; j+=1){
-            arr.push(0);
+            arr.push(코드표.보통칸);
             const td = document.createElement('td');
             //[해결방안]존재하지 않는 태그에 이벤트를 달 수 없습니다.
             td.addEventListener('contextmenu',function(e){
@@ -57,15 +67,25 @@ document.querySelector('#exec').addEventListener('click',function(){
 
                 if(e.currentTarget.textContent === '' || e.currentTarget.textContent === 'X'){
                     e.currentTarget.textContent = '!';
+                    if(dataset[줄][칸] === 코드표.지뢰){
+                        dataset[줄][칸] = 코드표.깃발지뢰;
+                    }else{
+                        dataset[줄][칸] = 코드표.깃발;
+                    }
                 }else if(e.currentTarget.textContent === '!'){
                     e.currentTarget.textContent = '?';
+                    if(dataset[줄][칸] === 코드표.깃발지뢰){
+                        dataset[줄][칸] = 코드표.물음표지뢰;
+                    }else{
+                        dataset[줄][칸] = 코드표.물음표;
+                    }
                 }else if(e.currentTarget.textContent === '?'){
-                    console.log(e.currentTarget.textContent);
-                    e.currentTarget.textContent = '';
-                    if(dataset[줄][칸] === 1){
-                        e.currentTarget.textContent = '';
-                    }else if(dataset[줄][칸] === 'X'){
+                    if(dataset[줄][칸] === 코드표.지뢰 && dataset[줄][칸] === 코드표.깃발지뢰 || dataset[줄][칸] === 코드표.물음표지뢰){
                         e.currentTarget.textContent = 'X';
+                        dataset[줄][칸] = 코드표.지뢰;
+                    }else{
+                        e.currentTarget.textContent = '';
+                        dataset[줄][칸] = 코드표.보통칸;
                     }
                 }
             })
@@ -78,10 +98,14 @@ document.querySelector('#exec').addEventListener('click',function(){
                 const 부모tbody = e.currentTarget.parentNode.parentNode;
                 const 칸 = Array.prototype.indexOf.call(부모tr.children,e.currentTarget);
                 const 줄 = Array.prototype.indexOf.call(부모tbody.children,부모tr);
+                //tip ||많이 나올 때는 includes를 쓰자
+                if([코드표.연칸,코드표.깃발,코드표.깃발지뢰,코드표.물음표지뢰,코드표.물음표].includes(dataset[줄][칸])){
+                    return;
+                }
                 //클릭했을 때 색상변화
                 e.currentTarget.classList.add('opened');
                 열은칸 += 1;
-                if(dataset[줄][칸] === 'X'){// 지뢰 클릭
+                if(dataset[줄][칸] === 코드표.지뢰){// 지뢰 클릭
                     e.currentTarget.textContent = '펑';
                     document.querySelector('#result').textContent = '실패ㅠㅠ';
                     중단플래그 = true;
@@ -96,10 +120,11 @@ document.querySelector('#exec').addEventListener('click',function(){
                         주변 = 주변.concat([dataset[줄+1][칸-1],dataset[줄+1][칸],dataset[줄+1][칸+1]])
                     }
                     let 주변지뢰개수 = 주변.filter(function(v){
-                        return v === 'X';
+                        return v === 코드표.지뢰;
                     }).length;
                     // 거짓인 값 : false,'',0,null,undefined,NaN
                     e.currentTarget.textContent = 주변지뢰개수 || '';
+                    dataset[줄][칸] = 코드표.연칸;
                     //주변지뢰개수를 찾는 것처럼 주변칸을 배열로 모으는 코드입니다.
                     if(주변지뢰개수 === 0){
                         console.log('주변을 엽니다');
@@ -129,7 +154,7 @@ document.querySelector('#exec').addEventListener('click',function(){
                             const 부모tbody = 옆칸.parentNode.parentNode;
                             const 옆칸칸 = Array.prototype.indexOf.call(부모tr.children,옆칸);
                             const 옆칸줄 = Array.prototype.indexOf.call(부모tbody.children,부모tr);
-                            if(dataset[옆칸줄][옆칸칸] !==1){
+                            if(dataset[옆칸줄][옆칸칸] !== 코드표.연칸){
                                 옆칸.click();//클릭한 효과를 낸다. -> 클릭이벤트를 찾아감 (일종의 재귀 비슷한 꼴이 된다.)
                             }
                         });
@@ -154,7 +179,7 @@ document.querySelector('#exec').addEventListener('click',function(){
         let 가로 = 셔플[k] % 10; //예 0 -> 세로 0번째 줄(0부터 시작), 이 값이 -1이 될 수도 있다. -> 배열의 index가 -1이 나오면 안된다.
         console.log(세로,가로);
         tbody.children[세로].children[가로].textContent = 'X';
-        dataset[세로][가로] = 'X';
+        dataset[세로][가로] = 코드표.지뢰;
     }
 });
 
